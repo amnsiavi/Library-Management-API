@@ -50,9 +50,9 @@ REST_FRAMEWORK={
     ),
     'DEFAULT_PERMISSIONS_CLASSES':(
         'rest_framework.permissions.IsAuthenticated',
-        'Users.permissions.AdminUser',
-        'Users.permissions.LibrarianUser',
-        'Users.permissions.MemberUser',
+        'Users.permissions.AdminPerm',
+        'Users.permissions.LibrarianPerm',
+        'Users.permissions.MemberPerm',
         'Users.permissions.BaseAuthModelUser'
         
         

@@ -64,7 +64,7 @@ class LibrarianUser(BaseAuthModel):
                 last_id = int(last_librarian.librarian_id.split('-')[1])
                 new_id = 'LBY-'+str(last_id+1)
             else:
-                new_id = 'ADM-1'
+                new_id = 'LBY-1'
             self.librarian_id = new_id
         super().save(*args,**kwargs)
 

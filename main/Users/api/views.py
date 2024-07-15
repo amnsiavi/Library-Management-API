@@ -12,7 +12,7 @@ from Users.api.serializers import (
     AdminUserSerializer,
     MemberUserSerializer
 )
-from Users.permissions import AdminUser, LibrarianUser, MemberUser, BaseAuthModelUser
+from Users.permissions import AdminPerm, LibrarianPerm, MemberPerm, BaseAuthModelUser
 from Users.models import  AdminUser, LibrarianUser, MemberUser, BaseAuthModel
 
 
@@ -134,7 +134,7 @@ def create_admin(request):
 
 # Librarian Routes
 @api_view(['POST'])
-@permission_classes([IsAuthenticated,BaseAuthModel|AdminUser])
+@permission_classes([IsAuthenticated,AdminPerm])
 @authentication_classes([JWTAuthentication])
 def create_librarian(request):
     
@@ -147,7 +147,7 @@ def create_librarian(request):
                 serializer.save()
                 return Response({'Librarian Created'},status=status.HTTP_201_CREATED)
             else:
-                return Response({'errors':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({'errors':serializer.errors},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     except ValidationError as ve:
         return Response({'errors':ve.detail},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     except Exception as e:
@@ -155,7 +155,7 @@ def create_librarian(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, AdminUser|LibrarianUser])
+@permission_classes([IsAuthenticated, AdminPerm|LibrarianPerm])
 @authentication_classes([JWTAuthentication])
 def get_librarians(request):
     
@@ -168,21 +168,21 @@ def get_librarians(request):
 
 
 @api_view(['GET','PUT','PATCH','DELETE'])
-@permission_classes([IsAuthenticated,AdminUser|LibrarianUser])
+@permission_classes([IsAuthenticated,AdminPerm|LibrarianPerm])
 @authentication_classes([JWTAuthentication])
 def get_librarian(request):
     
     try:
         if request.method == 'GET':
-            if ' librarian_id' not in request.query_params:
+            if 'librarian_id' not in request.query_params:
                 return Response({'errors':'Librarin ID is required'},status=status.HTTP_400_BAD_REQUEST)
-            librarian_id = request.query_params.get(' librarian_id')
-            instance = LibrarianUser.objects.filter( librarian_id= librarian_id).first()
+            librarian_id = request.query_params.get('librarian_id')
+            instance = LibrarianUser.objects.filter(librarian_id= librarian_id).first()
             serializer = LibrarianUserSerializer(instance)
             return Response({'data':serializer.data},status=status.HTTP_200_OK)
         elif request.method == 'PUT':
             if request.user:
-                if ' librarian_id' not in request.query_params:
+                if 'librarian_id' not in request.query_params:
                     return Response({'errors':'Libraribian ID is required'},status=status.HTTP_400_BAD_REQUEST)
                 if len(request.data) == 0:
                     return Response({'errors':'Revieved Empty Object'},status=status.HTTP_400_BAD_REQUEST)
@@ -196,12 +196,24 @@ def get_librarian(request):
                     return Response({'errors':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
         elif request.method == 'DELETE':
             if request.user:
-                if ' librarian_id' not in request.query_params:
+                if 'librarian_id' not in request.query_params:
                     return Response({'errors':'Librian ID is required'},status=status.HTTP_400_BAD_REQUEST)
                 librarian_id = request.query_params.get('librarian_id')
                 instance = LibrarianUser.objects.filter( librarian_id= librarian_id).first()
                 instance.delete()
                 return Response({'Librarian Deleted'},status=status.HTTP_200_OK)
+        elif request.method == 'PATCH':
+            if request.user:
+                if 'librarian_id' not in request.query_params:
+                    return Response({'errors':'Librarian ID is required'},status=status.HTTP_400_BAD_REQUEST)
+                librarian_id = request.query_params.get('librarian_id')
+                instance = LibrarianUser.objects.filter(librarian_id=librarian_id).first()
+                serializer = LibrarianUserSerializer(instance,data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response({'Librarian Updated'},status=status.HTTP_200_OK)
+                else:
+                    return Response({'errors':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
         
     except ValidationError as ve:
         return Response({"errors":ve.detail},status=status.HTTP_400_BAD_REQUEST)
@@ -211,7 +223,7 @@ def get_librarian(request):
 
 # Member Routes
 @api_view(['POST'])
-@permission_classes([IsAuthenticated,AdminUser|BaseAuthModelUser|LibrarianUser])
+@permission_classes([IsAuthenticated,AdminPerm|BaseAuthModelUser|LibrarianPerm])
 @authentication_classes([JWTAuthentication])
 def create_member(request):
     
@@ -232,7 +244,7 @@ def create_member(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated,AdminUser|LibrarianUser|BaseAuthModelUser|LibrarianUser])
+@permission_classes([IsAuthenticated,AdminPerm|LibrarianPerm|BaseAuthModelUser])
 @authentication_classes([JWTAuthentication])
 def get_memebers(request):
     
@@ -249,7 +261,7 @@ def get_memebers(request):
 
 
 @api_view(['GET','PUT','PATCH','DELETE'])
-@permission_classes([IsAuthenticated,AdminUser|BaseAuthModelUser|LibrarianUser])
+@permission_classes([IsAuthenticated,AdminPerm|BaseAuthModelUser|LibrarianPerm])
 @authentication_classes([JWTAuthentication])
 def get_memeber(request):
     
@@ -289,6 +301,15 @@ def get_memeber(request):
                     return Response({'msg':'Member Updated'},status=status.HTTP_200_OK)
                 else:
                     return Response({'errors':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+        elif request.method == 'DELETE':
+            if request.user:
+                if 'member_id' not in request.query_params:
+                    return Response({'errors':"Member ID is reqiured"},status=status.HTTP_400_BAD_REQUEST)
+                member_id=request.query_params.get('member_id')
+                instance = MemberUser.objects.filter(member_id=member_id)
+                instance.delete()
+                return Response({'msg':'Member Deleted'},status=status.HTTP_200_OK)
+            
     except ValidationError as ve:
         return Response({'errors':ve.detail},status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
