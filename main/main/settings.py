@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
-    'Users'
+    'Users',
+    'Books',
 ]
 AUTH_USER_MODEL = 'Users.BaseAuthModel'
 REST_FRAMEWORK={
