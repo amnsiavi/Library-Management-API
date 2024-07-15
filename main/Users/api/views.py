@@ -223,7 +223,7 @@ def get_librarian(request):
 
 # Member Routes
 @api_view(['POST'])
-@permission_classes([IsAuthenticated,AdminPerm|BaseAuthModelUser|LibrarianPerm])
+@permission_classes([IsAuthenticated,LibrarianPerm])
 @authentication_classes([JWTAuthentication])
 def create_member(request):
     
@@ -244,7 +244,7 @@ def create_member(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated,AdminPerm|LibrarianPerm|BaseAuthModelUser])
+@permission_classes([IsAuthenticated,AdminPerm|LibrarianPerm])
 @authentication_classes([JWTAuthentication])
 def get_memebers(request):
     
@@ -261,7 +261,7 @@ def get_memebers(request):
 
 
 @api_view(['GET','PUT','PATCH','DELETE'])
-@permission_classes([IsAuthenticated,AdminPerm|BaseAuthModelUser|LibrarianPerm])
+@permission_classes([IsAuthenticated,LibrarianPerm])
 @authentication_classes([JWTAuthentication])
 def get_memeber(request):
     

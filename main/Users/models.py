@@ -77,6 +77,7 @@ class MemberUser(BaseAuthModel):
     member_id = models.CharField(max_length=10, unique=True, editable=False)
     member_name = models.CharField(max_length=50)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    active = models.BooleanField(default=True)
     
     def save(self, *args, **kwargs):
         if not self.member_id:

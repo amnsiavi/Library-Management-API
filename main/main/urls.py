@@ -25,5 +25,8 @@ urlpatterns = [
     path('api/token',TokenObtainPairView.as_view()),
     path('api/token/refresh',TokenRefreshView.as_view()),
     
+    #Books Patterns
+    path('books/',include('Books.api.urls')),
+    
     
 ]

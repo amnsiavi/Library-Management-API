@@ -25,8 +25,8 @@ class LibraryModel(models.Model):
     publication_year = models.DateField(null=True,blank=True)
     quantity = models.PositiveIntegerField(default=0)
     ISBN = models.CharField(max_length=10,unique=True,editable=False)
+    avaliable = models.BooleanField(default=True)
     
-    member = models.ForeignKey(MemberUser,on_delete=models.CASCADE)
     
     def __str__(self):
         return self.title
