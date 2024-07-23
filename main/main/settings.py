@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'Users',
     'Books',
+    'django_filters',
 ]
 AUTH_USER_MODEL = 'Users.BaseAuthModel'
 REST_FRAMEWORK={
@@ -56,7 +57,10 @@ REST_FRAMEWORK={
         'Users.permissions.BaseAuthModelUser'
         
         
-    )
+    ),
+    'DEFAULT_FILTER_BACKENDS':(
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ),
 }
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),

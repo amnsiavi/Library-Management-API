@@ -13,7 +13,9 @@ from Users.permissions import LibrarianPerm, MemberPerm
 from Books.models import LibraryModel, Book_Issue
 from Books.api.serializers import LibraryModelSerializer, BookIssueSerializer
 from Users.models import MemberUser
-
+from rest_framework import generics
+from Books.filters import BookFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated,LibrarianPerm])
@@ -270,3 +272,51 @@ def csv_report_view(request):
         writer.writerow([book.ISBN, book.title, book.quantity])
 
     return response
+
+#Using in Generics View
+class BookListViewFilter(generics.ListAPIView):
+    
+    queryset = LibraryModel.objects.all()
+    serializer_class = LibraryModelSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = BookFilter
+    permission_classes = []
+    authentication_classes=[]
+
+#Filters in Class Based
+@api_view(['GET'])
+@permission_classes([])
+@authentication_classes([]) 
+def books_filter(request):
+    try:
+        queryset = LibraryModel.objects.all()
+        
+        if len(request.query_params) == 0:
+            return Response({'errors':{
+                'ISBN':'Required',
+                'Author':'Required',
+                'Title':'Required',
+                'Avalaible':'Required',
+                'genre':'Required'
+            }}, status=status.HTTP_400_BAD_REQUEST)
+        isbn = request.query_params.get('ISBN')
+        if isbn:
+            queryset = queryset.filter(ISBN=isbn)
+        title = request.query_params.get('title')
+        if title:
+            queryset = queryset.filter(title=title)
+        author = request.query_params.get('author')
+        if author:
+            queryset = queryset.filter(author=author)
+        genre = request.query_params.get('genre')
+        if genre:
+            queryset = queryset.filter(genre=genre)
+        publication_year = request.query_params.get('publication_year')
+        if publication_year:
+            queryset = queryset.filter(publication_year=publication_year)
+        serializer = LibraryModelSerializer(queryset,many=True)
+        return Response({'data':serializer.data},status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'errors':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    
