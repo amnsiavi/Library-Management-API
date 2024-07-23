@@ -1,5 +1,6 @@
 from django.db import models
 from Users.models import MemberUser
+from datetime import datetime
 # Create your models here.
 
 class LibraryModel(models.Model):
@@ -26,6 +27,7 @@ class LibraryModel(models.Model):
     quantity = models.PositiveIntegerField(default=0)
     ISBN = models.CharField(max_length=10,unique=True,editable=False)
     avaliable = models.BooleanField(default=True)
+   
     
     
     def __str__(self):
@@ -41,4 +43,15 @@ class LibraryModel(models.Model):
                 new_id = 'ISBN-1'
             self.ISBN = new_id
         super().save(*args,**kwargs)
+    
+class Book_Issue(models.Model):
+    
+    books = models.ForeignKey(LibraryModel,on_delete=models.CASCADE)
+    member = models.ForeignKey(MemberUser,on_delete=models.CASCADE)
+    issue_date = models.DateField(default = datetime.now())
+    return_date = models.DateField(null=True, blank=True)
+    returned = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return str(self.member)
     

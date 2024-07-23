@@ -5,7 +5,6 @@ from Users.models import (
     AdminUser, BaseAuthModel,LibrarianUser,
     MemberUser
 )
-
 @receiver(post_save,sender=AdminUser)
 def update_base_auth_model1(sender,instance,created,**kwargs):
     password = make_password(instance.password)
