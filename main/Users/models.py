@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from .constants import get_choices, get_member_type
 # Create your models here.
 
 class BaseAuthModel(AbstractUser):
@@ -17,10 +18,7 @@ class BaseAuthModel(AbstractUser):
 
 class AdminUser(BaseAuthModel):
     
-    GENDER_CHOICES = (
-        ('M','Male'),
-        ('F','Female')
-    )
+    
     
     class Meta:
         verbose_name = 'Admin User'
@@ -28,7 +26,7 @@ class AdminUser(BaseAuthModel):
     
     admin_id = models.CharField(max_length=10, unique=True, editable=False)
     admin_name = models.CharField(max_length=50)
-    gender = models.CharField(max_length=1,choices=GENDER_CHOICES)
+    gender = models.CharField(max_length=1,choices=get_choices)
     
     def save(self,*args,**kwargs):
         if not self.admin_id:
@@ -44,10 +42,7 @@ class AdminUser(BaseAuthModel):
 
 class LibrarianUser(BaseAuthModel):
     
-    GENDER_CHOICES = (
-        ('M','Male'),
-        ('F','Female')
-    )
+   
     
     class Meta:
         verbose_name = 'Librarian User',
@@ -55,7 +50,7 @@ class LibrarianUser(BaseAuthModel):
         
     librarian_id = models.CharField(max_length=10, unique=True, editable=False)
     librarian_name = models.CharField(max_length=50)
-    gender = models.CharField(max_length=1,choices=GENDER_CHOICES)
+    gender = models.CharField(max_length=1,choices=get_choices)
     
     def save(self,*args,**kwargs):
         if not self.librarian_id:
@@ -70,17 +65,14 @@ class LibrarianUser(BaseAuthModel):
 
 class MemberUser(BaseAuthModel):
     
-    GENDER_CHOICES = (
-        ('M','Male'),
-        ('F','Female')
-    )
+  
     MEMEBER_TYPE = (
         ('PEM','premium'),
         ('REG','regular')
     )
     member_id = models.CharField(max_length=10, unique=True, editable=False)
     member_name = models.CharField(max_length=50)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    gender = models.CharField(max_length=1, choices=get_choices)
     active = models.BooleanField(default=True)
     member_type = models.CharField(max_length=3,choices=MEMEBER_TYPE)
     
